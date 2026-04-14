@@ -1,55 +1,33 @@
 `timescale 1ns / 1ps
 
 module clock_divider(
-    input clk,            // 50 MHz
+    input clk,            // 32768 Hz RTC Crystal
     input rst,
-    output reg tick_scan, // 1 kHz tick
-    output reg tick_1hz,  // 1 Hz tick
-    output reg tick_4hz   // 4 Hz tick for fast alarm blinking/setup
+    output wire tick_scan, // ~1 kHz tick
+    output wire tick_1hz,  // 1 Hz tick
+    output wire tick_4hz   // 4 Hz tick for fast alarm blinking/setup
     );
 
-    // 1 kHz tick from 50 MHz (50,000 counts)
-    reg [15:0] cnt_scan;
-    
-    // 1 Hz and 4 Hz ticks derived from 1 kHz tick 
-    // Need 1000 counts for 1 Hz (10 bits: 0-999)
-    reg [9:0] cnt_1hz;
+    // Single 15-bit counter for 32768 Hz
+    reg [14:0] cnt;
 
     always @(posedge clk or posedge rst) begin
         if (rst) begin
-            cnt_scan <= 0;
-            cnt_1hz <= 0;
-            tick_scan <= 0;
-            tick_1hz <= 0;
-            tick_4hz <= 0;
+            cnt <= 0;
         end else begin
-            // 1. Generate 1 kHz Scan Tick
-            if (cnt_scan >= 49_999) begin
-                cnt_scan <= 0;
-                tick_scan <= 1;
-            end else begin
-                cnt_scan <= cnt_scan + 1;
-                tick_scan <= 0;
-            end
-            
-            // 2. Cascaded slow ticks derived from tick_scan
-            // These only progress when tick_scan pulses high
-            tick_1hz <= 0;
-            tick_4hz <= 0; // Default off
-            
-            if (tick_scan) begin
-                if (cnt_1hz >= 999) begin
-                    cnt_1hz <= 0;
-                    tick_1hz <= 1;
-                    tick_4hz <= 1; // Pulse 4Hz at the 1 second mark too
-                end else begin
-                    cnt_1hz <= cnt_1hz + 1;
-                    // Pulse 4Hz at quarter second marks (250ms, 500ms, 750ms)
-                    if (cnt_1hz == 249 || cnt_1hz == 499 || cnt_1hz == 749) begin
-                        tick_4hz <= 1;
-                    end
-                end
-            end
+            cnt <= cnt + 1;
         end
     end
+    
+    // Derived ticks based entirely on bit-level rollovers! No adders/comparators!
+    
+    // cnt[4:0] rolls over every 32 ticks (32768 / 32 = ~1 kHz)
+    assign tick_scan = (cnt[4:0] == 5'h1F);
+    
+    // cnt[12:0] rolls over every 8192 ticks (32768 / 8192 = 4 Hz)
+    assign tick_4hz = (cnt[12:0] == 13'h1FFF);
+    
+    // cnt rolls over every 32768 ticks (32768 / 32768 = 1 Hz)
+    assign tick_1hz = (cnt == 15'h7FFF);
+
 endmodule

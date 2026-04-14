@@ -11,10 +11,9 @@ module hc595_driver(
     output reg busy
     );
 
-    reg [1:0] state; // 0=IDLE, 1=SHIFT, 2=LATCH
+    reg [2:0] state; // 0=IDLE, 1=SHIFT_LOW, 2=SHIFT_HIGH, 3=LATCH_HIGH, 4=LATCH_LOW
     reg [4:0] bit_cnt;          
     reg [23:0] shift_reg;
-    reg [5:0] clk_div; // 1MHz SPI clock for breadboard stability 
 
     always @(posedge clk or posedge rst) begin
         if (rst) begin
@@ -25,12 +24,7 @@ module hc595_driver(
             busy <= 0;
             bit_cnt <= 0;
             shift_reg <= 0;
-            clk_div <= 0;
         end else begin
-            if (state != 0) begin
-                if (clk_div == 49) clk_div <= 0;
-                else clk_div <= clk_div + 1;
-            end else clk_div <= 0;
 
             case (state)
                 0: begin // IDLE
@@ -45,26 +39,34 @@ module hc595_driver(
                     end
                 end
 
-                1: begin // SHIFT
-                    if (clk_div == 24) begin
-                        sclk <= 0;
-                        dio <= shift_reg[23]; // MSB first 
-                    end else if (clk_div == 49) begin
-                        sclk <= 1;
-                        shift_reg <= {shift_reg[22:0], 1'b0};
-                        if (bit_cnt == 23) state <= 2;
-                        else bit_cnt <= bit_cnt + 1;
+                1: begin // SHIFT_LOW (Setup data, sclk low)
+                    sclk <= 0;
+                    dio <= shift_reg[23]; // MSB first 
+                    state <= 2;
+                end
+
+                2: begin // SHIFT_HIGH (Latch data into HC595, sclk high)
+                    sclk <= 1;
+                    shift_reg <= {shift_reg[22:0], 1'b0};
+                    if (bit_cnt == 23) state <= 3;
+                    else begin
+                        bit_cnt <= bit_cnt + 1;
+                        state <= 1;
                     end
                 end
 
-                2: begin // LATCH
-                    if (clk_div == 24) rclk <= 1;
-                    else if (clk_div == 49) begin
-                        rclk <= 0;
-                        state <= 0;
-                        busy <= 0;
-                    end
+                3: begin // LATCH_HIGH (Transfer to outputs)
+                    rclk <= 1;
+                    state <= 4;
                 end
+                
+                4: begin // LATCH_LOW (Finish transfer)
+                    rclk <= 0;
+                    state <= 0;
+                    busy <= 0;
+                end
+                
+                default: state <= 0;
             endcase
         end
     end
