@@ -18,12 +18,10 @@ project:
   # Don't forget to also update `PROJECT_SOURCES` in test/Makefile.
   source_files:
     - "tt_um_lambda_clock.v"
-    - "top_module.v"
     - "time_calendar_core.v"
     - "clock_divider.v"
     - "button_debounce.v"
-    - "display_scanner.v"
-    - "hc595_driver.v"
+    - "display_driver.v"
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
 # This section is for the datasheet/website. Use descriptive names (e.g., RX, TX, MOSI, SCL, SEG_A, etc.).
