@@ -33,7 +33,14 @@ module time_calendar_core(
     reg [3:0] max_D1, max_D0;
     always @(*) begin
         if (M1 == 0 && M0 == 2) begin // February
-            max_D1 = 2; max_D0 = 8; // 28 days fixed (logic for leap years removed to save area)
+            // Leap year rule in BCD: year is divisible by 4.
+            // If Y1 is even, Y0 must be 0, 4, 8. If Y1 is odd, Y0 must be 2, 6.
+            if ((Y1[0] == 0 && (Y0 == 0 || Y0 == 4 || Y0 == 8)) ||
+                (Y1[0] == 1 && (Y0 == 2 || Y0 == 6))) begin
+                max_D1 = 2; max_D0 = 9; // 29 days
+            end else begin
+                max_D1 = 2; max_D0 = 8; // 28 days
+            end
         end else if ((M1 == 0 && (M0 == 4 || M0 == 6 || M0 == 9)) || 
                      (M1 == 1 && M0 == 1)) begin // Apr, Jun, Sep, Nov
             max_D1 = 3; max_D0 = 0; // 30 days
