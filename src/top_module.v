@@ -63,13 +63,13 @@ module top_module(
         else if (btn_mode_press) disp_mode <= disp_mode + 1;
     end
     
-    // LEDs for UX Debugging / Setup Info
-    assign led_setup = (disp_mode >= 3'd1 && disp_mode <= 3'd5); // LD0
-    assign led_alarm = (disp_mode >= 3'd6);                      // LD1
+    // LEDs for UX Debugging / Setup Info (DISABLED TO SAVE SILICON AREA)
+    assign led_setup = 1'b0;
+    assign led_alarm = 1'b0;
 
     // 4. Time/Calendar/Alarm Core
     wire blink_1hz, alarm_match;
-    assign led_alarm_match = alarm_match; // Drive LD3 when alarm matches
+    assign led_alarm_match = 1'b0; // Drive LD3 when alarm matches (DISABLED)
     time_calendar_core u_core (
         .clk(clk),
         .rst(rst),
