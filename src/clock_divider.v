@@ -18,13 +18,13 @@ module clock_divider(
     always @(posedge clk or posedge rst) begin
         if (rst) begin
             cnt_scan <= 0;
-            tick_scan <= 0;
             cnt_1hz <= 0;
+            tick_scan <= 0;
             tick_1hz <= 0;
             tick_4hz <= 0;
         end else begin
             // 1. Generate 1 kHz Scan Tick
-            if (cnt_scan == 49999) begin
+            if (cnt_scan >= 49_999) begin
                 cnt_scan <= 0;
                 tick_scan <= 1;
             end else begin
@@ -32,18 +32,19 @@ module clock_divider(
                 tick_scan <= 0;
             end
             
-            // 2. Derive slower ticks from tick_scan
+            // 2. Cascaded slow ticks derived from tick_scan
+            // These only progress when tick_scan pulses high
             tick_1hz <= 0;
             tick_4hz <= 0; // Default off
             
             if (tick_scan) begin
-                if (cnt_1hz == 999) begin
+                if (cnt_1hz >= 999) begin
                     cnt_1hz <= 0;
                     tick_1hz <= 1;
-                    tick_4hz <= 1;
+                    tick_4hz <= 1; // Pulse 4Hz at the 1 second mark too
                 end else begin
                     cnt_1hz <= cnt_1hz + 1;
-                    // Tick 4Hz at 249, 499, 749, 999
+                    // Pulse 4Hz at quarter second marks (250ms, 500ms, 750ms)
                     if (cnt_1hz == 249 || cnt_1hz == 499 || cnt_1hz == 749) begin
                         tick_4hz <= 1;
                     end
