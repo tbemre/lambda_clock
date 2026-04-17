@@ -62,7 +62,7 @@ module tt_um_lambda_clock (
         else if (btn_mode_press) disp_mode <= disp_mode + 1;
     end
     
-    // LEDs for UX Debugging / Setup Info (DISABLED TO SAVE SILICON AREA)
+    // LEDs for UX Debugging / Setup Info (DISABLED TO SAVE SILICON AREA) //needs to be tested 
     assign uo_out[4] = 1'b0; // led_setup
     assign uo_out[5] = 1'b0; // led_alarm
 

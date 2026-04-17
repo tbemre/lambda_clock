@@ -17,7 +17,7 @@ The clock provides an 8-stage interactive module.
 - **BTN_MODE (ui[0])**: Cycles between Normal Time, Minutes Edit, Hours Edit, Days Edit, Months Edit, Years Edit, Alarm Min Edit, Alarm Hour Edit. 
 - **BTN_INC (ui[1])**: Increments the currently selected active time/date block.
 - **BTN_DEC (ui[2])**: Decrements the currently selected active block.
-- **BTN_RST (ui[3])**: Manually resets the clock back to the default time (14:10 01.01.2002).
+- **BTN_RST (ui[3])**: Manually resets the clock back to the default time.
 
 ## External hardware
 
@@ -25,4 +25,4 @@ The clock provides an 8-stage interactive module.
 - Two (2) 5641AS 4-Digit 7-Segment Displays.
 - One (1) 5621AS 2-Digit 7-Segment Display.
 - Active Buzzer (for output uo[3]).
-- Optional LEDs (for uo[4], uo[5], uo[6]) for Debug/Status indicators.
+- Optional LEDs (for uo[4], uo[5], uo[6]) for Debug/Status indicators. -needs to be tested-

@@ -19,8 +19,6 @@ module clock_divider(
         end
     end
     
-    // Derived ticks based entirely on bit-level rollovers! No adders/comparators!
-    
     // cnt[4:0] rolls over every 32 ticks (32768 / 32 = ~1 kHz)
     assign tick_scan = (cnt[4:0] == 5'h1F);
     

@@ -3,7 +3,7 @@ project:
   title:        "Lambda Clock"      # Project title
   author:       "Emre Caliskan"      # Your name
   discord:      ""      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
-  description:  "A 10-digit digital clock/calendar with alarm logic, multiplexed over 3 cascading 74HC595 shift registers."      # One line description of what your project does
+  description:  "This is a smart desktop clock that displays complete date and time information on a digital screen, features a built-in alarm and settings menu, and operates with high speed and precision."      # One line description of what your project does
   language:     "Verilog" # other examples include SystemVerilog, Amaranth, VHDL, etc
   clock_hz:     32768       # Clock frequency in Hz (or 0 if not applicable)
 

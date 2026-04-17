@@ -152,6 +152,8 @@ module time_calendar_core(
         end
     end
 
+    // Some features were removed here, still works, need to optimize(Month and Day logic).
+
     // Concurrent Outputs for 10-Digits
     always @(*) begin
         // Time section: Show real time UNLESS in Alarm mode (modes 6,7)
